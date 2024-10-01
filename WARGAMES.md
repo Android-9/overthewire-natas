@@ -71,5 +71,20 @@ After accessing the page you are greeted with a message, "Access disallowed. You
 
 The message will be different depending on from where you accessed the site.
 
-Websites know where you came from to reach the site (i.e. the address of the prior webpage). This is known as the [Referer](https://en.wikipedia.org/wiki/HTTP_referer).
+Websites know where you came from to reach the site (i.e. the address of the prior webpage). This is known as the [Referer](https://en.wikipedia.org/wiki/HTTP_referer). It is often used as a means to track users for statistical or promotional purposes.
 
+There are numerous ways you can spoof the website into thinking you came from "http://natas5.natas.labs.overthewire.org/". You could write a Python script, or use software that can intercept requests before it loads. The latter will be used to get an idea of how Burp Suite works.
+
+If you open up Burp Suite and go to the 'Proxy' tab, you will be able to turn on Intercept. This will make it so every request is intercepted and put on hold, allowing you to observe each request and make adjustments before forwarding it.
+
+Once Intercept is turned on, open up the built-in browser and head to "http://natas5.natas.labs.overthewire.org/". You will find an HTTP request in the Intercept window. Click on it and add a line in the raw request field:
+
+`Referer: http://natas5.natas.labs.overthewire.org/`
+
+Forward the request and the message should change.
+
+Password: 0n35PkggAPm2zbEpOU802c0x0Msn1ToK
+
+---
+
+#### Level 6
