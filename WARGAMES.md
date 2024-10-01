@@ -67,3 +67,9 @@ Password: QryZXc2e0zahULdHrtHxzyYkj59kUxLQ
 ---
 
 #### Level 5
+After accessing the page you are greeted with a message, "Access disallowed. You are visiting from "" while authorized users should come only from "http://natas5.natas.labs.overthewire.org/".
+
+The message will be different depending on from where you accessed the site.
+
+Websites know where you came from to reach the site (i.e. the address of the prior webpage). This is known as the [Referer](https://en.wikipedia.org/wiki/HTTP_referer).
+
