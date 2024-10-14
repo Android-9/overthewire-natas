@@ -5,7 +5,9 @@ As explained in the Natas description, each level has its own website accessible
 To login to the preliminary level:
 
 > URL: http://natas0.natas.labs.overthewire.org
+>
 > Username: natas0
+>
 > Password: natas0
 
 ---
