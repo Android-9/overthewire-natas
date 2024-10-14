@@ -79,7 +79,7 @@ There are numerous ways you can spoof the website into thinking you came from "h
 
 If you open up Burp Suite and go to the 'Proxy' tab, you will be able to turn on Intercept. This will make it so every request is intercepted and put on hold, allowing you to observe each request and make adjustments before forwarding it.
 
-Once Intercept is turned on, open up the built-in browser and head to "http://natas5.natas.labs.overthewire.org/". You will find an HTTP request in the Intercept window. Click on it and add a line in the raw request field:
+Once Intercept is turned on, open up the built-in browser and head to "http://natas4.natas.labs.overthewire.org/". You will find an HTTP request in the Intercept window. Click on it and add a line in the raw request field:
 
 `Referer: http://natas5.natas.labs.overthewire.org/`
 
@@ -90,3 +90,18 @@ Password: 0n35PkggAPm2zbEpOU802c0x0Msn1ToK
 ---
 
 #### Level 6
+After entering the webpage, you are again greeted with a message but this time it says, "Access disallowed. You are not logged in".
+
+Unlike the previous level, we are given less of a hint on what to do and where to look. However, the key message is that the website somehow knows that you are not logged in.
+
+You may have noticed if you have been on the internet before, that you don't need to login repeatedly everytime you access a particular website if you have already logged in once. Websites use something called [cookies](https://en.wikipedia.org/wiki/HTTP_cookie#Session_management) to remember information about a user. Cookies are stored on the user's device while they are browsing, holding useful data such as a 'state' like items that have been added to a shopping cart, or to save previously entered input in text fields like addresses.
+
+You can make use of Burp Suite again to intercept the request when accessing the natas5 webpage.
+
+This time you will find a field called "Cookie" in the request with `loggedin=0`. Simply change this to a 1 before forwarding and you will be given the password for natas6.
+
+Password: 0RoJwHdSKWFTYR5WuiAewauSuNaBXned
+
+---
+
+#### Level 7
