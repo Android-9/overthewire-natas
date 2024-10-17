@@ -12,3 +12,6 @@ This is up to date as of September 24th 2024.
 - [Level 3](WARGAMES.md#level-3)
 - [Level 4](WARGAMES.md#level-4)
 - [Level 5](WARGAMES.md#level-5)
+- [Level 6](WARGAMES.md#level-6)
+- [Level 7](WARGAMES.md#level-7)
+- [Level 8](WARGAMES.md#level-8)
