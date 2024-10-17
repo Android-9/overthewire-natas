@@ -118,6 +118,17 @@ Password: bmg8SvU1LizuWjx3y7xkNERkHxGre0GS
 ---
 
 #### Level 8
+The website has a 'Home' and 'About' page links. Clicking on one of them navigates you to that page and displays a message such as "this is the about page".
+
+If you view the source code you will find a hint:
+
+`<!-- hint: password for webuser natas8 is in /etc/natas_webpass/natas8 -->`
+
+Knowing this, you can capitalize on the non-existent security of this site and navigate to that page using the PHP link. Doing so will display the contents of natas8, which holds the password.
+
+`https://natas7.natas.labs.overthewire.org/index.php?page=/etc/natas_webpass/natas8`
+
+Password: xcoXLmzMkoIP9D7hlgPlh9XD7OgLAe5Q
 
 ---
 
