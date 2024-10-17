@@ -107,7 +107,7 @@ Password: 0RoJwHdSKWFTYR5WuiAewauSuNaBXned
 #### Level 7
 This time you are greeted with a form that asks you to input a 'secret'. You can try inputting an arbitrary string such as '1234', but this gives a message that says, "Wrong secret" at the top.
 
-The first most obvious step is to check the source code, which the site has already given a handy link to. Upon going through the source code you will find that there is a piece of PHP out in the open that includes the file path `includes/secret.inc` to access the variable `$_POST['secret']`.
+The first most obvious step is to check the source code, which the site has already given a handy link to. Upon going through it, you will find that there is a piece of PHP code out in the open that includes the file path `includes/secret.inc` to access the variable `$_POST['secret']`.
 
 Navigate to `http://natas6.natas.labs.overthewire.org/includes/secret.inc` to find the aforementioned secret.
 
