@@ -235,8 +235,35 @@ Password: t7I5VHvpa14sJTUGV0cbEsbYfFP2dmOu
 ---
 
 #### Level 11
+Level 11 is an extension of the previous level. The only difference on the webpage is that it has a new message, "For security reasons, we now filter on certain characters".
 
+Viewing the source code, you can find a new version compared to [Level 10](#level-10):
 
+```php
+$key = "";
+
+if(array_key_exists("needle", $_REQUEST)) {
+    $key = $_REQUEST["needle"];
+}
+
+if($key != "") {
+    if(preg_match('/[;|&]/',$key)) {
+        print "Input contains an illegal character!";
+    } else {
+        passthru("grep -i $key dictionary.txt");
+    }
+}
+```
+
+There is now a form of input validation which checks if your input contains `;`, `|` or `&`. `preg_match()` is used to perform a regular expression match as stated in the PHP documentation for [preg_match](https://www.php.net/manual/en/function.preg-match.php). This would render the previous level's solution useless.
+
+However, with a bit of creativity, there is another way.
+
+`passthru` executes the command `grep` so developing a better understanding of the command and its options may be helpful in figuring out an alternative approach. The GeeksForGeeks site on [grep](https://www.geeksforgeeks.org/grep-command-in-unixlinux/) says that the general format of the command is `grep [options] pattern [files]`. You can specify multiple files for simultaeneous searching.
+
+So instead what you can do is input `'' /etc/natas_webpass/natas11` which would mean the full command executed is `grep -i '' /etc/natas_webpass/natas11 dictionary.txt`. This follows the required format for `grep` whilst avoiding the use of illegal characters defined by the filter. The `''` would simply match everything and it will output the contents of the password file for natas11 and the `dictionary.txt`.
+
+Password: UJdqkK1pTu6VLt9UHWAgRZz6sVUZ3lEk
 
 ---
 
