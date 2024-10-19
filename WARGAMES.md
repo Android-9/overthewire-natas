@@ -200,10 +200,43 @@ Password: ZE1ck82lmdGIoErlhQgWND6j2Wzz6b6t
 ---
 
 #### Level 10
+There is a message, "Find words containing:" and then a form for input. Inputting a word such as "secret" gives back a list of words that contain the string "secret".
+
+View the source code.
+
+```php
+$key = "";
+
+if(array_key_exists("needle", $_REQUEST)) {
+    $key = $_REQUEST["needle"];
+}
+
+if($key != "") {
+    passthru("grep -i $key dictionary.txt");
+}
+```
+
+This time you will find a different piece of PHP code. This first initializes a variable called `$key`, then checks if some variable called "needle" is in `$_REQUEST` via `array_key_exists()`. More information about global PHP variables can be found [here](https://www.w3schools.com/php/php_superglobals_request.asp). If it exists, it sets `$key` to the value of the variable "needle" in the request. Finally, if `$key` is not empty, it calls the `passthru` command. According to the PHP documentation on [passthru](https://www.php.net/manual/en/function.passthru.php), it can be found that this command executes system commands just like on the command line. You can see this is used to output matching words in `dictionary.txt` that contain `$key` through the use of `grep`.
+
+With this in mind, you could exploit this vulnerability by using command injection.
+
+Remember that you can run multiple commands in one line via a `;` between each one, so inputting something like `secret; ls /` would in fact cause `passthru` to execute the command `grep -i secret; ls / dictionary.txt`. This would show all the files in the root directory.
+
+From the initial description of [natas](https://overthewire.org/wargames/natas/), it states that all passwords are stored in `/etc/natas_webpass/natasX` where X is the level number.
+
+So, knowing this you can try inputting `; ls /etc/natas_webpass/natas10` (it is not necessary to have a string like 'secret' at the start). The output shows that the file path does exist, thus you can now try reading the file.
+
+`; cat /etc/natas_webpass/natas10`
+
+> Note that this will also read the `dictionary.txt` because remember that the full command `passthru` will execute is `grep -i; cat /etc/natas_webpass/natas10 dictionary.txt`.
+
+Password: t7I5VHvpa14sJTUGV0cbEsbYfFP2dmOu
 
 ---
 
 #### Level 11
+
+
 
 ---
 
