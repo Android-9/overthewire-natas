@@ -270,12 +270,85 @@ Password: UJdqkK1pTu6VLt9UHWAgRZz6sVUZ3lEk
 #### Level 12
 In Level 12, you are greeted with a similar looking website but only this time it is a form that allows you to set the background color of the website. You can try inputting a valid hex color code such as `#eb4034` which will set the background to a bright red backdrop. There is also a message at the top, "Cookies are protected with XOR encryption" which gives a hint as to how to obtain the password for the next level.
 
+View the source code as usual (omitting the irrelevant code):
+
+```php
+$defaultdata = array( "showpassword"=>"no", "bgcolor"=>"#ffffff");
+
+function xor_encrypt($in) {
+    $key = '<censored>';
+    $text = $in;
+    $outText = '';
+
+    // Iterate through each character
+    for($i=0;$i<strlen($text);$i++) {
+    $outText .= $text[$i] ^ $key[$i % strlen($key)];
+    }
+
+    return $outText;
+}
+
+function loadData($def) {
+    global $_COOKIE;
+    $mydata = $def;
+    if(array_key_exists("data", $_COOKIE)) {
+    $tempdata = json_decode(xor_encrypt(base64_decode($_COOKIE["data"])), true);
+    if(is_array($tempdata) && array_key_exists("showpassword", $tempdata) && array_key_exists("bgcolor", $tempdata)) {
+        if (preg_match('/^#(?:[a-f\d]{6})$/i', $tempdata['bgcolor'])) {
+        $mydata['showpassword'] = $tempdata['showpassword'];
+        $mydata['bgcolor'] = $tempdata['bgcolor'];
+        }
+    }
+    }
+    return $mydata;
+}
+
+function saveData($d) {
+    setcookie("data", base64_encode(xor_encrypt(json_encode($d))));
+}
+
+$data = loadData($defaultdata);
+
+if(array_key_exists("bgcolor",$_REQUEST)) {
+    if (preg_match('/^#(?:[a-f\d]{6})$/i', $_REQUEST['bgcolor'])) {
+        $data['bgcolor'] = $_REQUEST['bgcolor'];
+    }
+}
+
+saveData($data);
+```
+
+Going from the top, a variable `$defaultdata` is first initialized and set to an array with the properties of "showpassword" and "bgcolor".
+
+Then three functions are defined:
+
+- XOR encryption function (will be explained further down)
+- `loadData($def)`
+- `saveData($d)`
+
+...
 
 
+```php
+if($data["showpassword"] == "yes") {
+    print "The password for natas12 is <censored><br>";
+}
+```
+
+This last snippet of PHP code indicates that in order to see the password for natas12, the value of "showpassword" in the `$data` array must be set to "yes". After understanding the code, it should be clear that the original cookie should be replaced with something else that would instead represent an array `array( "showpassword"=>"yes", "bgcolor"=>"#ffffff")`.
+
+First, find the original cookie by going into Developer Tools (if you are on a Chrome browser) via the 3 dots and 'More Tools' or press `⌥ + ⌘ + I` on a Mac or `CTRL + SHIFT + I` on a Windows machine. Navigate to the Applications tab to find the "data" cookie.
+
+`HmYkBwozJw4WNyAAFyB1VUcqOE1JZjUIBis7ABdmbU1GIjEJAyIxTRg%3d`
+
+
+
+
+Use the newly found key, you can now correctly encode `{"showpassword":"yes","bgcolor":"#ffffff"}` through XOR encryption first, then converting it to Base64. It should look like [this](https://gchq.github.io/CyberChef/#recipe=XOR(%7B'option':'UTF8','string':'eDWo'%7D,'Standard',false)To_Base64('A-Za-z0-9%2B/%3D')&input=eyJzaG93cGFzc3dvcmQiOiJ5ZXMiLCJiZ2NvbG9yIjoiI2ZmZmZmZiJ9) in CyberChef.
 
 New Cookie: `HmYkBwozJw4WNyAAFyB1VUc9MhxHaHUNAic4Awo2dVVHZzEJAyIxCUc5`
 
-After obtaining the new cookie, all you have to do is set the 'data' variable to that via Developer Tools in a Chrome browser. Go to Developer Tools via the 3 dots and 'More Tools' or press `⌥ + ⌘ + I` on a Mac or `CTRL + SHIFT + I` on a Windows machine. Navigate to the Applications tab to find cookies, edit the value of 'data' to the new cookie and refresh the window.
+After obtaining the new cookie, all you have to do is set the 'data' variable to that and refresh the window.
 
 Password: yZdkjAYZRd3R7tq7T5kXMjMJlOIkzDeB
 
