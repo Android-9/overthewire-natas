@@ -327,7 +327,8 @@ Then three functions are defined:
 - `saveData($d)`
 
 ...
-
+...
+...
 
 ```php
 if($data["showpassword"] == "yes") {
@@ -341,8 +342,28 @@ First, find the original cookie by going into Developer Tools (if you are on a C
 
 `HmYkBwozJw4WNyAAFyB1VUcqOE1JZjUIBis7ABdmbU1GIjEJAyIxTRg%3d`
 
+You might notice that it is not currently in Base64 format, and that is because the URL needs to be decoded to convert elements such as `%3d` to `=`.
 
+Once the URL has been decoded, decode the Base64 string.
 
+From here, you can apply XOR encryption with the key `{"showpassword":"no","bgcolor":"#ffffff"}`, setting the format as UTF8.
+
+> To json encode `array( "showpassword"=>"no", "bgcolor"=>"#ffffff")`, you can use https://onlinephp.io/ with the code:
+> ```php
+> <?php
+> 
+> $defaultdata = array( "showpassword"=>"no", "bgcolor"=>"#ffffff");
+> 
+> echo json_encode($defaultdata);
+> 
+> ?>
+> ```
+
+You can combine all of these steps together in [CyberChef](https://gchq.github.io/CyberChef/#recipe=URL_Decode()From_Base64('A-Za-z0-9%2B/%3D',true,false)XOR(%7B'option':'UTF8','string':'%7B%22showpassword%22:%22no%22,%22bgcolor%22:%22%23ffffff%22%7D'%7D,'Standard',false)&input=SG1Za0J3b3pKdzRXTnlBQUZ5QjFWVWNxT0UxSlpqVUlCaXM3QUJkbWJVMUdJakVKQXlJeFRSZyUzZA) to retrieve the output:
+
+`eDWoeDWoeDWoeDWoeDWoeDWoeDWoeDWoeDWoeDWoe`
+
+Note that the key is repeated because it is smaller than the plain text. You can infer therefore that the key is `eDWo`.
 
 Use the newly found key, you can now correctly encode `{"showpassword":"yes","bgcolor":"#ffffff"}` through XOR encryption first, then converting it to Base64. It should look like [this](https://gchq.github.io/CyberChef/#recipe=XOR(%7B'option':'UTF8','string':'eDWo'%7D,'Standard',false)To_Base64('A-Za-z0-9%2B/%3D')&input=eyJzaG93cGFzc3dvcmQiOiJ5ZXMiLCJiZ2NvbG9yIjoiI2ZmZmZmZiJ9) in CyberChef.
 
