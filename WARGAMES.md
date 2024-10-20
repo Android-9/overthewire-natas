@@ -268,6 +268,16 @@ Password: UJdqkK1pTu6VLt9UHWAgRZz6sVUZ3lEk
 ---
 
 #### Level 12
+In Level 12, you are greeted with a similar looking website but only this time it is a form that allows you to set the background color of the website. You can try inputting a valid hex color code such as `#eb4034` which will set the background to a bright red backdrop. There is also a message at the top, "Cookies are protected with XOR encryption" which gives a hint as to how to obtain the password for the next level.
+
+
+
+
+New Cookie: `HmYkBwozJw4WNyAAFyB1VUc9MhxHaHUNAic4Awo2dVVHZzEJAyIxCUc5`
+
+After obtaining the new cookie, all you have to do is set the 'data' variable to that via Developer Tools in a Chrome browser. Go to Developer Tools via the 3 dots and 'More Tools' or press `⌥ + ⌘ + I` on a Mac or `CTRL + SHIFT + I` on a Windows machine. Navigate to the Applications tab to find cookies, edit the value of 'data' to the new cookie and refresh the window.
+
+Password: yZdkjAYZRd3R7tq7T5kXMjMJlOIkzDeB
 
 ---
 
