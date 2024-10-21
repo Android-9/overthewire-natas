@@ -441,7 +441,7 @@ Most of the PHP code is not relevant in solving this level however one key line 
 
 `<input type="hidden" name="filename" value="<?php print genRandomString(); ?>.jpg" />`
 
-You can see here that the filename is saved as a randomly generated string and then attaches the .jpg extension. This means that regardless of what file you upload, it will be set as .jpg. The file is also saved in a random directory on the website.
+You can see here that the filename is saved as a randomly generated string and then attaches the .jpg extension. This means that regardless of what file you upload, it will be set as .jpg. The file is then saved in a directory `upload/`.
 
 Given this, you could create a PHP script (as the website is written in PHP) that prints the contents of the natas13 password file and upload it onto the website. Once it is uploaded, accessing the file should execute the code.
 
