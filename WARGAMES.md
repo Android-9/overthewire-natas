@@ -510,7 +510,7 @@ script.php: JPEG image data
 
 > Note that the flag `-e` enables the interpretion of backslash escapes as stated in the [echo](https://linux.die.net/man/1/echo) documentation. In this case, `\x` denotes the start of a hexadecimal character code. The `-n` is used to omit the trailing newline at the end which is important so that the file type remains to be seen as an image.
 
-Next, repeat the same steps as in [Level 13](#level-13) by first choosing the file, and then going into Developer Tools to change the extension to .php before uploading. Afterwards, navigate to the randomly generated filename in `uploads/`.
+Next, repeat the same steps as in [Level 13](#level-13) by first choosing the script file, and then going into Developer Tools to change the extension to .php before uploading. Afterwards, navigate to the randomly generated filename in `uploads/`.
 
 Password: z3UYcr4v4uBpeX8f7EZbMHlzK4UR2XtQ
 
