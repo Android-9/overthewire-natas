@@ -376,6 +376,90 @@ Password: yZdkjAYZRd3R7tq7T5kXMjMJlOIkzDeB
 ---
 
 #### Level 13
+In Level 13, you are able to choose and upload a JPEG file. You can try uploading any kind of file within 1KB of size and if successful you will be greeted with a message in a format like: `The file upload/abc123.jpeg has been uploaded`.
+
+<u>Source Code</u>
+
+```php
+<?php
+
+function genRandomString() {
+    $length = 10;
+    $characters = "0123456789abcdefghijklmnopqrstuvwxyz";
+    $string = "";
+
+    for ($p = 0; $p < $length; $p++) {
+        $string .= $characters[mt_rand(0, strlen($characters)-1)];
+    }
+
+    return $string;
+}
+
+function makeRandomPath($dir, $ext) {
+    do {
+    $path = $dir."/".genRandomString().".".$ext;
+    } while(file_exists($path));
+    return $path;
+}
+
+function makeRandomPathFromFilename($dir, $fn) {
+    $ext = pathinfo($fn, PATHINFO_EXTENSION);
+    return makeRandomPath($dir, $ext);
+}
+
+if(array_key_exists("filename", $_POST)) {
+    $target_path = makeRandomPathFromFilename("upload", $_POST["filename"]);
+
+
+        if(filesize($_FILES['uploadedfile']['tmp_name']) > 1000) {
+        echo "File is too big";
+    } else {
+        if(move_uploaded_file($_FILES['uploadedfile']['tmp_name'], $target_path)) {
+            echo "The file <a href=\"$target_path\">$target_path</a> has been uploaded";
+        } else{
+            echo "There was an error uploading the file, please try again!";
+        }
+    }
+} else {
+?>
+
+<form enctype="multipart/form-data" action="index.php" method="POST">
+<input type="hidden" name="MAX_FILE_SIZE" value="1000" />
+<input type="hidden" name="filename" value="<?php print genRandomString(); ?>.jpg" />
+Choose a JPEG to upload (max 1KB):<br/>
+<input name="uploadedfile" type="file" /><br />
+<input type="submit" value="Upload File" />
+</form>
+<?php } ?>
+<div id="viewsource"><a href="index-source.html">View sourcecode</a></div>
+</div>
+</body>
+</html>
+```
+
+Most of the PHP code is not relevant in solving this level however one key line is this:
+
+`<input type="hidden" name="filename" value="<?php print genRandomString(); ?>.jpg" />`
+
+You can see here that the filename is saved as a randomly generated string and then attaches the .jpg extension. This means that regardless of what file you upload, it will be set as .jpg. The file is also saved in a random directory on the website.
+
+Given this, you could create a PHP script (as the website is written in PHP) that prints the contents of the natas13 password file and upload it onto the website. Once it is uploaded, accessing the file should execute the code.
+
+```php
+<?php
+
+passthru("cat /etc/natas_webpass/natas13");
+
+?>
+```
+
+However as previously mentioned, uploading any file will result in it being changed to a .jpg format if it isn't already. Thus, you could use Burp Suite to intercept the request and change the extension to .php before it gets uploaded, or alternatively, use Developer Tools in a Chrome browser after choosing the file but before uploading, and modify the filename back to the .php extension.
+
+Then, upload the file. The file should now be available in `upload/` with the original .php extension.
+
+Finally, navigate to where the file is on the website: `http://natas12.natas.labs.overthewire.org/upload/abc123.php` where `abc123` should be replaced with the randomly generated string.
+
+Password: trbs5pCjCrkuSknBBKHhaBxq6Wm1j3LC
 
 ---
 
