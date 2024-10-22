@@ -517,6 +517,79 @@ Password: z3UYcr4v4uBpeX8f7EZbMHlzK4UR2XtQ
 ---
 
 #### Level 15
+In Level 15, we are presented with a username and password form reminiscent of older website login pages. Inputting an arbitary username and password will result in a "Access denied!" message.
+
+As usual, view the source code:
+
+```php
+<?php
+if(array_key_exists("username", $_REQUEST)) {
+    $link = mysqli_connect('localhost', 'natas14', '<censored>');
+    mysqli_select_db($link, 'natas14');
+
+    $query = "SELECT * from users where username=\"".$_REQUEST["username"]."\" and password=\"".$_REQUEST["password"]."\"";
+    if(array_key_exists("debug", $_GET)) {
+        echo "Executing query: $query<br>";
+    }
+
+    if(mysqli_num_rows(mysqli_query($link, $query)) > 0) {
+            echo "Successful login! The password for natas15 is <censored><br>";
+    } else {
+            echo "Access denied!<br>";
+    }
+    mysqli_close($link);
+} else {
+?>
+
+<form action="index.php" method="POST">
+Username: <input name="username"><br>
+Password: <input name="password"><br>
+<input type="submit" value="Login" />
+</form>
+<?php } ?>
+```
+
+This time we are introduced to an SQL query for the first time. If you have never encountered SQL before, it is highly recommended to learn the basics before attempting further challenges.
+
+The main line of interest is `$query`:
+
+```php
+"SELECT * from users where username=\"".$_REQUEST["username"]."\" and password=\"".$_REQUEST["password"]."\"";
+```
+
+Usually an SQL query is in the format like this:
+
+```sql
+SELECT * from users where username="John Doe" and password="123";
+```
+
+However, because this is embedded within PHP code, the whole query must be enclosed in double quotes to be interpreted as a string by PHP. Doing so would also mean that you have to escape the set of double quotes around the username and password (`\"` and `\"`) so as to include them as part of the string; not breaking PHP's string parsing and causing it to believe it is a string termination.
+
+> The `.` used to contain `$_REQUEST["username"]` is needed to concatenate a PHP variable to a string. String concatenation in PHP is explained [here](https://stackoverflow.com/questions/8336858/how-can-i-combine-two-strings-together-in-php). Basically, if you have two variables, say, `$a` and `$b`, in order to concatenate the two as a string, you would use `$a . $b`. So the whole SQL query line can be broken down into sub-parts:
+>
+> - `"SELECT * from users where username=\""` <br>
+> - `. $_REQUEST["username"] .` <br>
+> - `"\" and password=\""` <br> 
+> - `. $_REQUEST["password"] .` <br> 
+> - `"\"";`
+
+The fact that user input is directly placed into the SQL query leads to a very serious vulnerability. There is a way to exploit this by inserting unexpected input (SQL code) to login succesfully, or access the usernames and passwords in a database. This is known as [SQL Injection](https://www.w3schools.com/sql/sql_injection.asp).
+
+Instead of inputting a typical username and password string that the developers might expect, you can try something like:
+
+`Username: " or ""="`
+`Password: " or ""="`
+
+This still creates a well-formed SQL query:
+```sql
+SELECT * from users where username="" or ""="" and password="" or ""=""
+```
+
+Because `""=""` is always true, it will print all user records.
+
+Instead though, for this example, the PHP code will print the password for natas15 if the number of rows returned by the query is greater than 0.
+
+Password: SdqIqBsFcz3yotlNYErZSZwblkm0lrvx
 
 ---
 
