@@ -585,6 +585,8 @@ This still creates a well-formed SQL query:
 SELECT * from users where username="" or ""="" and password="" or ""=""
 ```
 
+The first quote closes the initial quote used to enclose the string, and the `""="` is used to complete the ending quote.
+
 Because `""=""` is always true, it will print all user records.
 
 Instead though, for this example, the PHP code will print the password for natas15 if the number of rows returned by the query is greater than 0.
