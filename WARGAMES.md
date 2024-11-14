@@ -639,7 +639,7 @@ Username: <input name="username"><br>
 <?php } ?>
 ```
 
-Viewing the source code, you can see that there is no easy way to retrieve the password through SQL injection like in the previous level.
+Viewing the source code, you can see that there is no easy way to retrieve the password through SQL injection like in the previous [level](#level-15).
 
 ---
 
