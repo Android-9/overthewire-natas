@@ -727,6 +727,33 @@ Password: hPkjKYviLQctEW33QmuXL6eDVfMW4sGo
 ---
 
 #### Level 17
+In Level 17, we are taken back to a familiar webpage almost identical to [Level 10](#level-10) and [Level 9](#level-9). This time the message reads, "For security reasons, we now filter even more on certain
+characters". 
+
+Let's view the source code to see what has changed:
+
+```php
+<pre>
+<?
+$key = "";
+
+if(array_key_exists("needle", $_REQUEST)) {
+    $key = $_REQUEST["needle"];
+}
+
+if($key != "") {
+    if(preg_match('/[;|&`\'"]/',$key)) {
+        print "Input contains an illegal character!";
+    } else {
+        passthru("grep -i \"$key\" dictionary.txt");
+    }
+}
+?>
+</pre>
+```
+
+As you can see, now the characters `` ` ``, `\`, `'`, `"` are restricted. This renders the solution from [Level 10](#level-10) useless. However, despite this, there are still special characters that have not been
+prohibited; namely, `$` and `()`. 
 
 ---
 
