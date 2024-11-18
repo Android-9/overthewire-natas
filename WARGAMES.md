@@ -653,9 +653,12 @@ In this case, we could probe the characters in the password by using a query suc
 SELECT * FROM users where username="natas16" AND password LIKE BINARY '%<CHAR>%'
 ```
 
+This searches for users that have the username "natas16" and have a password that contains a particular character. The double `%` is used as wildcards to signify that it does not matter where the character is, as long as
+it exists within the string, it matches.
+
 > Note: The `BINARY` is used to ensure that SQL is case-sensitive as by default it is not.
 
-By doing this across all possible symbols (alphanumerical), we could find the character set that is used for the password. Of course, it would be tedious to do this manually so to save time we can write a Python script
+By doing this across all possible symbols (alphanumerical), we could find the character set that is used for the password. This is known as blind SQL injection. Of course, it would be tedious to do this manually so to save time we can write a Python script
 for this purpose.
 
 ```python
@@ -705,6 +708,9 @@ while len(password) != 32:
             print(password)
             break
 ```
+
+This script runs very similarly to the previous one used to identify the character set. The idea is that since we have the character set used for the password now, we can go through each character iteratively
+and add it to an empty string called `password`, then check whether the user exists with a password that starts with those characters.
 
 This results in a similar output:
 
