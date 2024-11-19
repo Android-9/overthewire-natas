@@ -653,13 +653,11 @@ In this case, we could probe the characters in the password by using a query suc
 SELECT * FROM users where username="natas16" AND password LIKE BINARY '%<CHAR>%'
 ```
 
-This searches for users that have the username "natas16" and have a password that contains a particular character. The double `%` is used as wildcards to signify that it does not matter where the character is, as long as
-it exists within the string, it matches.
+This searches for users that have the username "natas16" and have a password that contains a particular character. The double `%` is used as wildcards to signify that it does not matter where the character is, as long as it exists within the string, it matches.
 
 > Note: The `BINARY` is used to ensure that SQL is case-sensitive as by default it is not.
 
-By doing this across all possible symbols (alphanumerical), we could find the character set that is used for the password. This is known as blind SQL injection. Of course, it would be tedious to do this manually so to save time we can write a Python script
-for this purpose.
+By doing this across all possible symbols (alphanumerical), we could find the character set that is used for the password. This is known as blind SQL injection. Of course, it would be tedious to do this manually so to save time we can write a Python script for this purpose.
 
 ```python
 import requests
@@ -758,15 +756,11 @@ prohibited; namely, `$` and `()`.
 These three characters can be used in Linux bash when you want to enforce an ordering of command execution like PEMDAS in algebra. If you want to first execute an inner/nested command that will then become the value
 for the outer command, you follow the format: `outerCommand $(innerCommand)`. For example, if you have a file called 'abc' that has the line "hel" in it, you could write something like `echo $(cat abc)lo` to print "hello".
 
-Another key piece to this puzzle is the same line of code from [Level 9](#level-9) and [Level 10](#level-10), `passthru("grep -i \"$key\" dictionary.txt")`. Remember that it takes your input and uses `grep` to search for
-matching words in the dictionary. Inputting a proper word such as "password" would yield a couple of results, but say "passworda" would return nothing. We can take advantage of this logic by injecting code such as:
+Another key piece to this puzzle is the same line of code from [Level 9](#level-9) and [Level 10](#level-10), `passthru("grep -i \"$key\" dictionary.txt")`. Remember that it takes your input and uses `grep` to search for matching words in the dictionary. Inputting a proper word such as "password" would yield a couple of results, but say "passworda" would return nothing. We can take advantage of this logic by injecting code such as:
 
 `password$(grep c /etc/natas/natas_webpass/natas17)`
 
-where 'c' refers to some character. The inner command is clearly trying to find if character 'c' is present in the natas17 password file. At this point the condition should be very obvious; if the password contains the character
-'c', then the output of the whole command would be password + c and this would in turn lead to no results from the dictionary (no 'password' result). If the password does not contain the character 'c', then the inner command would
-return nothing and be left with 'password', which is a valid word and would be shown as one of the results from the dictionary. So bringing this all together, you can again write a Python script with the aforementioned condition
-to first find the password character set.
+where 'c' refers to some character. The inner command is clearly trying to find if character 'c' is present in the natas17 password file. At this point the condition should be very obvious; if the password contains the character 'c', then the output of the whole command would be password + c and this would in turn lead to no results from the dictionary (no 'password' result). If the password does not contain the character 'c', then the inner command would return nothing and be left with 'password', which is a valid word and would be shown as one of the results from the dictionary. So bringing this all together, you can again write a Python script with the aforementioned condition to first find the password character set.
 
 ```python
 import requests
@@ -869,8 +863,7 @@ Username: <input name="username"><br>
 <?php } ?>
 ```
 
-You will notice that it is practically identical to [Level 16](#level-16) except for one important detail; the outputs are commented out. It no longer will tell you when you check a username whether it exists or not.
-This rules out the previous approach to obtaining the next level's password.
+You will notice that it is practically identical to [Level 16](#level-16) except for one important detail; the outputs are commented out. It no longer will tell you when you check a username whether it exists or not. This rules out the previous approach to obtaining the next level's password.
 
 When no output is given, what can we use as a test to check if something exists or not for blind injection? It is not necessary to have output as indication to determine whether a condition is true or not, how about using time?
 
@@ -880,16 +873,13 @@ We can use this in conjunction with `AND` to force the server to reveal informat
 
 `natas18" AND sleep(3) #`
 
-When you input this as the username, you should notice that it takes abnormally long to load compared to if you were to just simply check for `natas18` (precisely over 3 seconds). This indicates that the user 'natas18' does in fact exist as the `sleep(3)` function
-only executes if the first condition is true (that there is a username called 'natas18' in the database). So with this in mind, the condition becomes whether the request elapsed time goes past some number of seconds; if it does, then it implies
-the first condition is correct, otherwise it is false.
+When you input this as the username, you should notice that it takes abnormally long to load compared to if you were to just simply check for `natas18` (precisely over 3 seconds). This indicates that the user 'natas18' does in fact exist as the `sleep(3)` function only executes if the first condition is true (that there is a username called 'natas18' in the database). So with this in mind, the condition becomes whether the request elapsed time goes past some number of seconds; if it does, then it implies the first condition is correct, otherwise it is false.
 
 Combining this with the input used for [Level 16](#level-16), you get:
 
 `natas18" AND password LIKE BINARY "%a%" and sleep(3) #`
 
-where `a` can be any character. When you use this as input, you will find that it takes less than 3 seconds regardless of whether you use `sleep(3)` or not (assuming your internet connection is not extremely slow). That would imply the character
-'a' is not part of the password character set.
+where `a` can be any character. When you use this as input, you will find that it takes less than 3 seconds regardless of whether you use `sleep(3)` or not (assuming your internet connection is not extremely slow). That would imply the character 'a' is not part of the password character set.
 
 Now with this knowledge, the process is very similar to the last few levels. First, find the password character set, then reconstruct it.
 
@@ -952,8 +942,7 @@ Password: 6OG1PbKdVjyBlpxgD4DDbRG6ZLlCGgCJ
 ---
 
 #### Level 19
-In Level 19, you are presented with a login page and some text, "Please login with your admin account to retrieve credentials for natas19.". Trying to login using an arbitrary string for the username and password returns
-a message, "You are logged in as a regular user. Login as an admin to retrieve credentials for natas19.".
+In Level 19, you are presented with a login page and some text, "Please login with your admin account to retrieve credentials for natas19.". Trying to login using an arbitrary string for the username and password returns a message, "You are logged in as a regular user. Login as an admin to retrieve credentials for natas19.".
 
 View the source code as per usual to understand what is going on:
 
@@ -1045,7 +1034,8 @@ Password: <input name="password"><br>
 <?php } ?>
 ```
 
-
+From the code, it should be abundantly clear that you need to somehow login as the session id of the admin to gain access to the password. However, there is no way of setting `$_SESSION["admin"]` as 1.
+Thus, the only option is to  
 
 
 ---
